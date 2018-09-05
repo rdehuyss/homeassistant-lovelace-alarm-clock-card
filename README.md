@@ -8,10 +8,9 @@ The idea is to have a really minimalistic, readable clock with some Home Assista
 ## Screenshots love...
 ![](https://i.imgur.com/sP5DNxC.png "1")
 ![](https://i.imgur.com/6Mbs0H6.png "2")
-![](https://i.imgur.com/6Mbs0H6.png "3")
-![](https://i.imgur.com/sMX4Ru9.png "4")
-![](https://i.imgur.com/E3QcX0F.png "5")
-![](https://i.imgur.com/ErtOXPq.png "6")
+![](https://i.imgur.com/sMX4Ru9.png "3")
+![](https://i.imgur.com/E3QcX0F.png "4")
+![](https://i.imgur.com/ErtOXPq.png "5")
 
 ## Note:
 - This card is still in beta and it scratches my own itch. No support/guarantees/.... It may eat your dog or the alarm may not go off and you can thus miss a date with the love of your live, ...
