@@ -6,6 +6,9 @@ This card was designed for a tablet which I use on my nightstand with a resoluti
 The idea is to have a really minimalistic, readable clock with some Home Assistant love. 
 The card exists out of two parts:
 
+## Note:
+This card is still in beta and it scratches my own itch. No support/guarantees/.... It may eat your dog.
+
 ## Features
 * the clock part (65%) of the height of the screen with:
   * the clock of course
@@ -15,7 +18,12 @@ The card exists out of two parts:
 * the lower part (35%) of the height of the screen which:
   * can show up to 3 other home-assistant cards
   * shows the snooze and dismiss button when the alarm is ringing
+  
+But wait, that's not all! It also integrates with:
+* a holiday calendar so that when you have a holiday the next day, your alarm will automatically disable.
+* the workday sensor so that when you have a holiday the next day, your alarm will automatically disable.
 
+* When the alarm clock is ringing, the `input_boolean.alarm_clock_ringing` will be on, otherwise it will be off. Using it, one can do many automations like starting sonos, ... .
 
 ## Updates
 * 2018-09-05: first beta release
@@ -40,6 +48,12 @@ You should have installed the custom_component [hass-variables](https://github.c
 
 #### In your configuration.yml
 ```
+input_boolean:
+  alarm_clock_ringing:
+    name: Alarm clock Ringing
+    initial: off
+    icon: mdi:alarm
+
 variable:
   alarm_clock:
     value: 'Alarm Clock'
@@ -64,7 +78,7 @@ resources:
         - type: "custom:alarm-clock-card"
           holiday:
             calendars:
-              - calendar.amplexor
+              - calendar.holiday
           cards:
             - type: 'custom:simple-weather-card'
               entity: weather.yweather
