@@ -53,7 +53,7 @@ You should have installed the custom_component [hass-variables](https://github.c
 
 ### Configuration
 #### Copy all files from this repo to:
-[home-assistant-root]/www/custom_ui/alarm-clock-card/
+`[home-assistant-root]/www/custom_ui/alarm-clock-card/`
 
 #### In your configuration.yml
 ```
