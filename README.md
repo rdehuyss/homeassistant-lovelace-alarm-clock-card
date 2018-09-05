@@ -1,12 +1,18 @@
 # Alarm Clock for Home Assistant
-Building the perfect alarm clock...
 
 In the quest for a perfect Alarm Clock, I'm getting closer, thanks to home assistant.
 
 This card was designed for a tablet which I use on my nightstand with a resolution of 1280px on 800px. 
 The idea is to have a really minimalistic, readable clock with some Home Assistant love. 
 The card exists out of two parts:
-* 
+* the clock part (65%) of the height of the screen with:
+** the clock of course
+** the options to setup alarms
+** a nap timer option
+* the lower part (35%) of the height of the screen which:
+** can show up to 3 other home-assistant cards
+** shows the snooze and dismiss button when the alarm is ringing
+
 
 ## Updates
 * 2018-09-05: first beta release
@@ -34,6 +40,7 @@ You should have installed the custom_component [hass-variables](https://github.c
 variable:
   alarm_clock:
     value: 'Alarm Clock'
+    restore: true
 ```
 
 #### In your ui-lovelace.yaml
