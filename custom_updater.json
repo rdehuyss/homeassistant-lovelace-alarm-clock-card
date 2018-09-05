@@ -1,0 +1,9 @@
+{
+  "alarm-clock-card": {
+    "updated_at": "2018-09-05",
+    "version": "0.5.0",
+    "remote_location": "https://raw.githubusercontent.com/rdehuyss/homeassistant-lovelace-alarm-clock-card/master/alarm-clock-card.js",
+    "visit_repo": "https://github.com/rdehuyss/homeassistant-lovelace-alarm-clock-card",
+    "changelog": "https://github.com/rdehuyss/homeassistant-lovelace-alarm-clock-card/releases/latest"
+  }
+}
