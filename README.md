@@ -4,12 +4,22 @@ In the quest for a perfect Alarm Clock, I'm getting closer, thanks to home assis
 
 This card was designed for a tablet which I use on my nightstand with a resolution of 1280px on 800px. 
 The idea is to have a really minimalistic, readable clock with some Home Assistant love. 
-The card exists out of two parts:
+
+## Screenshots love...
+![](https://i.imgur.com/sP5DNxC.png "1")
+![](https://i.imgur.com/6Mbs0H6.png "2")
+![](https://i.imgur.com/6Mbs0H6.png "3")
+![](https://i.imgur.com/sMX4Ru9.png "4")
+![](https://i.imgur.com/E3QcX0F.png "5")
+![](https://i.imgur.com/ErtOXPq.png "6")
 
 ## Note:
-This card is still in beta and it scratches my own itch. No support/guarantees/.... It may eat your dog.
+- This card is still in beta and it scratches my own itch. No support/guarantees/.... It may eat your dog or the alarm may not go off and you can thus miss a date with the love of your live, ...
+- I tried to solve the alarm in the backend using timers, ... but did not succeed due to some outstanding bugs. So, this means that the logic to *fire the alarm is in the frontend*. If you close your browser, it will not go off. But, since it was designed for an always on tablet (for me a Nexus 7 2013 which is always running and has this constantly open), it appears to work
+
 
 ## Features
+The card exists out of two parts:
 * the clock part (65%) of the height of the screen with:
   * the clock of course
   * the options to setup alarms
