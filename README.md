@@ -5,13 +5,16 @@ In the quest for a perfect Alarm Clock, I'm getting closer, thanks to home assis
 This card was designed for a tablet which I use on my nightstand with a resolution of 1280px on 800px. 
 The idea is to have a really minimalistic, readable clock with some Home Assistant love. 
 The card exists out of two parts:
+
+## Features
 * the clock part (65%) of the height of the screen with:
-** the clock of course
-** the options to setup alarms
-** a nap timer option
+  * the clock of course
+  * the options to setup alarms
+  * the option to override/update the next alarm
+  * a nap timer option
 * the lower part (35%) of the height of the screen which:
-** can show up to 3 other home-assistant cards
-** shows the snooze and dismiss button when the alarm is ringing
+  * can show up to 3 other home-assistant cards
+  * shows the snooze and dismiss button when the alarm is ringing
 
 
 ## Updates
