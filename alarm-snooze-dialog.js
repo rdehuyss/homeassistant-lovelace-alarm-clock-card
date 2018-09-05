@@ -113,6 +113,7 @@ class AlarmSnoozeDialog extends Polymer.Element {
     }
 
     close() {
+        this._resetTimer();
         this.$.snoozedialog.close();
     }
 

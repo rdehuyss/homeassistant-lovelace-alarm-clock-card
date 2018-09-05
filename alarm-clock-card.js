@@ -8,6 +8,9 @@ class AlarmClockCard extends Polymer.Element {
   static get template() {
     return Polymer.html`
     <style>
+          body {
+              overflow:hidden;
+          }
           .alarm-clock {
             padding: 20px;
             height: 65vh;
@@ -124,9 +127,7 @@ class AlarmClockCard extends Polymer.Element {
     super.ready();
     this.clock = this.$.clock;
     this.date = this.$.date;
-    this.alarmButtons = this.$.alarmButtons;
-    this.extraInfo = this.$.extraInfo;
-    this.alarmButtons.style.display = 'none';
+    this.$.alarmButtons.style.display = 'none';
 
     this._updateTime();
     setInterval(() => this._updateTime(), 500);
@@ -156,17 +157,7 @@ class AlarmClockCard extends Polymer.Element {
     moment.locale(hass.language);
     console.log('[alarmclock 3]', hass, this.clock);
 
-    this._updateChildCards(hass);
-
-    if (this.$) {
-      if (this._hass.states['input_boolean.alarm_clock_ringing'].state == 'on') {
-        this.alarmButtons.style.display = 'flex';
-        this.extraInfo.style.display = 'none';
-      } else if (this._hass.states['input_boolean.alarm_clock_ringing'].state == 'off') {
-        this.alarmButtons.style.display = 'none';
-        this.extraInfo.style.display = 'flex';
-      }
-    }
+    this._updateAlarmFooter(hass);
   }
 
   _updateTime(force = false) {
@@ -187,6 +178,19 @@ class AlarmClockCard extends Polymer.Element {
         this.$.sleepTime.innerHTML = `Sleep is the best meditation...`;
       }
     }
+  }
+
+  _updateAlarmFooter(hass) {
+    if (this.$) {
+      if (this._hass.states['input_boolean.alarm_clock_ringing'].state == 'on') {
+        this.$.alarmButtons.style.display = 'flex';
+        this.$.extraInfo.style.display = 'none';
+      } else if (this._hass.states['input_boolean.alarm_clock_ringing'].state == 'off') {
+        this.$.alarmButtons.style.display = 'none';
+        this.$.extraInfo.style.display = 'flex';
+      }
+    }
+    this._updateChildCards(hass);
   }
 
   _updateChildCards(hass) {
@@ -228,8 +232,8 @@ class AlarmClockCard extends Polymer.Element {
     }
     try {
       element.setConfig(card);
-      if (this.hass)
-        element.hass = this.hass;
+      if (this._hass)
+        element.hass = this._hass;
     } catch (exc) {
       console.warn(`Could not set config on card ${card.type}`);
     }
@@ -341,6 +345,7 @@ class HeightUpdater {
   static updateHeight(card, element) {
     if(this._updateHeightOnNormalCard(card, element)) return;
     if(this._updateHeightOnNestedCards(card, element)) return;
+    if(this._updateHeightOnMediaControlCards(card, element)) return;
   }
 
   static _updateHeightOnNormalCard(card, element) {
@@ -361,6 +366,22 @@ class HeightUpdater {
       if (cardTag) {
         cardTag.style.height = "100%";
         cardTag.style.boxSizing = "border-box";
+        return true;
+      }
+    }
+    return false;
+  }
+
+  static _updateHeightOnMediaControlCards(card, element) {
+    if(card.type != 'media-control') {
+      return;
+    }
+    if (element.firstChild && element.firstChild.shadowRoot) {
+      element.firstChild.style.height = '100%';
+      let bannerTag = element.firstChild.shadowRoot.querySelector('div.banner');
+      if (bannerTag) {
+        bannerTag.style.boxSizing = "border-box";
+        bannerTag.style.height = "calc(100% - 72px)";
         return true;
       }
     }

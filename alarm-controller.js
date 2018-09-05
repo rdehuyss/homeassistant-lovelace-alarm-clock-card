@@ -73,11 +73,15 @@ export class AlarmController {
     _nextAlarmIsAHolidayAccordingToCalendar(nextAlarm) {
         if(this.config.holiday && this.config.holiday.calendars) {
             for(let calendar_entity_id of this.config.holiday.calendars) {
-                const startDate = moment(this._hass.states[calendar_entity_id].attributes.start_time, "YYYY-MM-DD HH:mm:ss");
-                const endDate = moment(this._hass.states[calendar_entity_id].attributes.end_time, "YYYY-MM-DD HH:mm:ss");
-
-                if(moment(`${nextAlarm.date} ${nextAlarm.time}`, 'YYYY-MM-DD HH:mm').isBetween(startDate, endDate, 'minutes', '[]')) {
-                    return true;
+                if(this._hass.states[calendar_entity_id]) {
+                    const startDate = moment(this._hass.states[calendar_entity_id].attributes.start_time, "YYYY-MM-DD HH:mm:ss");
+                    const endDate = moment(this._hass.states[calendar_entity_id].attributes.end_time, "YYYY-MM-DD HH:mm:ss");
+    
+                    if(moment(`${nextAlarm.date} ${nextAlarm.time}`, 'YYYY-MM-DD HH:mm').isBetween(startDate, endDate, 'minutes', '[]')) {
+                        return true;
+                    }
+                } else {
+                    console.warn(`Could not find calendar ${calendar_entity_id} in hass.states`);
                 }
             }
         }
