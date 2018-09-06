@@ -73,8 +73,12 @@ variable:
 
 ```
 resources:
-  - url: https://unpkg.com/moment@2.22.2/moment.js
+  - url: https://unpkg.com/moment@2.22.2/min/moment.min.js
     type: js
+  - url: https://cdn.jsdelivr.net/npm/flatpickr
+    type: js
+  - url: https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css
+    type: css
   - url: /local/custom_ui/alarm-clock-card/alarm-clock-card.js?v=0.5.0
     type: module
 ...
