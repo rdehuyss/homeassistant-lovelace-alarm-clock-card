@@ -135,15 +135,24 @@ class AlarmClockCard extends Polymer.Element {
   }
 
   setConfig(config) {
-    if (!config || !config.cards || !Array.isArray(config.cards)) {
+    if (!config) {
       throw new Error('Card config incorrect.');
     }
 
+    if(config.name && config.name.indexOf('alarm_clock') < 0) {
+      throw new Error('Alarm Clock name should start with alarm_clock');
+    }
+
+    if(!config.cards || !Array.isArray(config.cards)) {
+      throw new Error('Card config is missing cards.');
+    }
+
     this.config = {
+      name: 'alarm_clock',
       timeFormat: 'HH:mm',
       ...config
     };
-    this._alarmController = new AlarmController(config);
+    this._alarmController = new AlarmController(this.config);
 
     if (this.$) {
       this._buildConfig();
@@ -156,7 +165,6 @@ class AlarmClockCard extends Polymer.Element {
     this._hass = hass;
     this._alarmController.hass = hass;
     moment.locale(hass.language);
-    console.log('[alarmclock 3]', hass, this.clock);
 
     this._updateAlarmFooter(hass);
   }

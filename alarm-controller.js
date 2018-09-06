@@ -11,11 +11,11 @@ export class AlarmController {
     }
 
     get alarmRingingEntity() {
-        return this._hass.states['input_boolean.alarm_clock_ringing'];
+        return this._hass.states[`input_boolean.${this.config.name}_ringing`];
     }
 
     get alarmClockVariableEntity() {
-        return this._hass.states['variable.alarm_clock'];
+        return this._hass.states[`variable.${this.config.name}`];
     }
 
     get alarmClockConfiguration() {
@@ -113,7 +113,10 @@ export class AlarmController {
     }
 
     _getWorkdaySensors() {
-        return { workdaySensor: this._hass.states['binary_sensor.workday'], workdayTomorrowSensor: this._hass.states['binary_sensor.workday_tomorrow'] };
+        if(this.config.holiday && this.config.holiday.workday_sensor && this.config.holiday.workday_sensor_tomorrow) {
+            return { workdaySensor: this._hass.states[this.config.holiday.workday_sensor], workdayTomorrowSensor: this._hass.states[this.config.holiday.workday_sensor_tomorrow] };
+        }
+        return { workdaySensor: null, workdayTomorrowSensor: null} ;
     }
 
     set nextAlarm(nextAlarm) {
