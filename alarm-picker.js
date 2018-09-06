@@ -94,6 +94,8 @@ class AlarmPicker extends Polymer.Element {
             return 'mdi:alarm-off';
         } else if (alarm.snooze) {
             return 'mdi:alarm-snooze';
+        } else if (alarm.holiday) {
+            return 'mdi:cake';
         }
         return 'mdi:alarm';
     }

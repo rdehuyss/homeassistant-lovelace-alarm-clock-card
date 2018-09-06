@@ -63,7 +63,8 @@ export class AlarmController {
             || this._nextAlarmIsAHolidayAccordingToWorkdaySensor(nextAlarm)) {
             return {
                 ...nextAlarm,
-                enabled: false
+                enabled: false,
+                holiday: true
             };
         }
 

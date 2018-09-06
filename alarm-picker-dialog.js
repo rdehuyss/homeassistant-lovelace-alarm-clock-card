@@ -110,20 +110,17 @@ class AlarmPickerScheduleDialog extends Polymer.Element {
     static get properties() {
         return {
           alarmController: AlarmController,
-          alarmsEnabled: Boolean
+          alarmsEnabled: {
+            type: Boolean,
+            observer: '_alarmsEnabledChanged'
+          }
         }
       }
 
     ready() {
         super.ready();
         this.alarmsEnabled = this.alarmController.alarmClockConfiguration.alarmsEnabled;
-        if(this.alarmsEnabled && this.alarmController.workdaySensorContainsSaturdayOrSunday()) {
-          this.$.alarmPickerSa.disabled = true;
-          this.$.alarmPickerSu.disabled = true;
-          this.$.moreInfo.innerHTML = `
-            Saturday and Sunday are disabled because of workday sensor.<br />
-            Configure only holiday in workday sensor to make them available.`;
-        }
+        this._alarmsEnabledChanged();
     }
 
     _getDayOfWeek(days) {
@@ -132,6 +129,16 @@ class AlarmPickerScheduleDialog extends Polymer.Element {
 
     _getAlarmForDay(day) {
       return this.alarmController.alarmClockConfiguration[day];
+    }
+
+    _alarmsEnabledChanged(newValue, oldValue) {
+      if(this.alarmController.workdaySensorContainsSaturdayOrSunday()) {
+        this.$.alarmPickerSa.disabled = true;
+        this.$.alarmPickerSu.disabled = true;
+        this.$.moreInfo.innerHTML = `
+          Saturday and Sunday are disabled because of workday sensor.<br />
+          Configure only holiday in workday sensor to make them available.`;
+      }
     }
 
     saveAndClose() {

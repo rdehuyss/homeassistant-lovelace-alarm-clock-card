@@ -86,7 +86,7 @@ class AlarmClockCard extends Polymer.Element {
                                     on-click="_showAlarmScheduleDialog"></paper-icon-button>
               </template>
             </div>
-            <div id="clock" class="clock">HH:mm</div>
+            <div id="clock" class="clock" on-click="_toggleAlarmFullScreen">HH:mm</div>
             <div class="options">
               <div></div>
               <div id="sleepTime" class="sleepTime"></div>
@@ -101,6 +101,7 @@ class AlarmClockCard extends Polymer.Element {
       </ha-card>
 
       <div id="extraInfo">
+          <div style="text-align: center;">Your cards will display here shortly...</div>
       </div>
       <div id="alarmButtons">
         <alarm-snooze-button-card alarm-controller=[[_alarmController]]></alarm-snooze-button-card>
@@ -180,9 +181,22 @@ class AlarmClockCard extends Polymer.Element {
     }
   }
 
+  _toggleAlarmFullScreen() {
+    if(this.$.alarmclock.style.height == '100vh') {
+      this.$.alarmButtons.style.display = 'none';
+      this.$.alarmclock.style.height = '65vh';
+      this.$.extraInfo.style.display = 'flex';
+    } else {
+      this.$.alarmButtons.style.display = 'none';
+      this.$.extraInfo.style.display = 'none';
+      this.$.alarmclock.style.height = '100vh';
+    }
+  }
+
   _updateAlarmFooter(hass) {
     if (this.$) {
       if (this._hass.states['input_boolean.alarm_clock_ringing'].state == 'on') {
+        this.$.alarmclock.style.height = '65vh';
         this.$.alarmButtons.style.display = 'flex';
         this.$.extraInfo.style.display = 'none';
       } else if (this._hass.states['input_boolean.alarm_clock_ringing'].state == 'off') {
