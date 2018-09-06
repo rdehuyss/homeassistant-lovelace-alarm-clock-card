@@ -36,7 +36,7 @@ export class AlarmController {
 
     snooze() {
         let alarmClockConfiguration = this.alarmClockConfiguration;
-        alarmClockConfiguration.snooze(10);
+        alarmClockConfiguration.snooze(this.config.snooze_time);
         this._saveConfiguration(alarmClockConfiguration);
         this._alarmRingingOff(); //must be at end
     }
@@ -82,7 +82,11 @@ export class AlarmController {
                         return true;
                     }
                 } else {
-                    console.warn(`Could not find calendar ${calendar_entity_id} in hass.states`);
+                    if(!this.warning_logged) {
+                        console.warn(`Could not find calendar ${calendar_entity_id} in hass.states`);
+                        this.warning_logged = true;
+                    }
+                    
                 }
             }
         }
@@ -155,7 +159,7 @@ export class AlarmController {
             this._alarmRingingOn();
         } else if(this.isAlarmRinging()) {
             //TODO: configure 10 minutes
-            if(moment(nextAlarm.time, "HH:mm").add(10, 'minutes').format('HH:mm') == moment().format('HH:mm')) {
+            if(moment(nextAlarm.time, "HH:mm").add(this.config.auto_disable, 'minutes').format('HH:mm') == moment().format('HH:mm')) {
                 this.dismiss();
             }
         }

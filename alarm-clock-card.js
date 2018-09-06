@@ -149,7 +149,9 @@ class AlarmClockCard extends Polymer.Element {
 
     this.config = {
       name: 'alarm_clock',
-      timeFormat: 'HH:mm',
+      time_format: 'HH:mm',
+      snooze_time: 10,
+      auto_disable: 30,
       ...config
     };
     this._alarmController = new AlarmController(this.config);
@@ -170,10 +172,17 @@ class AlarmClockCard extends Polymer.Element {
   }
 
   _updateTime(force = false) {
-    let time = moment().format(this.config.timeFormat);
+    let time = moment().format(this.config.time_format);
+    let isAlarmRinging = this._alarmController.isAlarmRinging();
 
-    if (this.clock && (force || this._time !== time || this._alarmClockConfigurationLastUpdate !== this._alarmController.alarmClockConfiguration.lastUpdated)) {
+    if (this.clock && 
+          (force 
+            || this._time !== time 
+            || this._ringing !== isAlarmRinging 
+            || this._alarmClockConfigurationLastUpdate !== this._alarmController.alarmClockConfiguration.lastUpdated)) {
+              
       this._time = time;
+      this._ringing = isAlarmRinging;
       this._alarmClockConfigurationLastUpdate = this._alarmController.alarmClockConfiguration.lastUpdated;
       this.clock.innerHTML = `
         <div class="clock-display" style="text-align: center;">
@@ -181,7 +190,9 @@ class AlarmClockCard extends Polymer.Element {
         </div>
       `;
       this.date.innerHTML = moment().format('ddd DD/MM/YYYY');
-      if (this._alarmController.isAlarmEnabled) {
+      if (this._alarmController.isAlarmRinging()) {
+        this.$.sleepTime.innerHTML = `Time to rise and shine!`;
+      } else if (this._alarmController.isAlarmEnabled) {
         this.$.sleepTime.innerHTML = `${moment(this._alarmController.nextAlarm.dateTime).toNow(true)} more of wonderful sleep...`;
       } else {
         this.$.sleepTime.innerHTML = `Sleep is the best meditation...`;
@@ -203,11 +214,11 @@ class AlarmClockCard extends Polymer.Element {
 
   _updateAlarmFooter(hass) {
     if (this.$) {
-      if (this._hass.states['input_boolean.alarm_clock_ringing'].state == 'on') {
+      if (this._alarmController.isAlarmRinging()) {
         this.$.alarmclock.style.height = '65vh';
         this.$.alarmButtons.style.display = 'flex';
         this.$.extraInfo.style.display = 'none';
-      } else if (this._hass.states['input_boolean.alarm_clock_ringing'].state == 'off') {
+      } else if (!this._alarmController.isAlarmRinging()) {
         this.$.alarmButtons.style.display = 'none';
         this.$.extraInfo.style.display = 'flex';
       }
