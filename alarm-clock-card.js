@@ -150,8 +150,8 @@ class AlarmClockCard extends Polymer.Element {
     this.config = {
       name: 'alarm_clock',
       time_format: 'HH:mm',
-      snooze_time: 10,
-      auto_disable: 30,
+      snooze_time: '00:10',
+      auto_disable: '00:30',
       ...config
     };
     this._alarmController = new AlarmController(this.config);
@@ -180,7 +180,7 @@ class AlarmClockCard extends Polymer.Element {
             || this._time !== time 
             || this._ringing !== isAlarmRinging 
             || this._alarmClockConfigurationLastUpdate !== this._alarmController.alarmClockConfiguration.lastUpdated)) {
-              
+
       this._time = time;
       this._ringing = isAlarmRinging;
       this._alarmClockConfigurationLastUpdate = this._alarmController.alarmClockConfiguration.lastUpdated;

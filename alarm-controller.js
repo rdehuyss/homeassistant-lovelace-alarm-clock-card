@@ -158,9 +158,22 @@ export class AlarmController {
         if(!this.isAlarmRinging() && moment().format('HH:mm') == nextAlarm.time) {
             this._alarmRingingOn();
         } else if(this.isAlarmRinging()) {
-            //TODO: configure 10 minutes
-            if(moment(nextAlarm.time, "HH:mm").add(this.config.auto_disable, 'minutes').format('HH:mm') == moment().format('HH:mm')) {
+            if(moment(nextAlarm.time, "HH:mm").add(moment.duration(this.config.auto_disable)).format('HH:mm') == moment().format('HH:mm')) {
                 this.dismiss();
+                if(this.config.scripts) {
+                    var script = this.config.scripts.find((script) => script.when == 'on_dismissed');
+                    if(script) {
+                        this._hass.callService('script', 'turn_on', {"entity_id": script.entity});
+                    }
+                }
+            }
+        } else if(this.config.scripts) {
+            for(let script of this.config.scripts) {
+                if(script.when !== 'on_snooze' && script.when !== 'on_dismiss') {
+                    if(moment(nextAlarm.time, "HH:mm").add(moment.duration(script.when)).format('HH:mm') == moment().format('HH:mm')) {
+                        this._hass.callService('script', 'turn_on', {"entity_id": script.entity});
+                    }
+                }
             }
         }
     }
@@ -216,8 +229,8 @@ export class AlarmConfiguration {
         this.su = {enabled: false, time: "09:00"}
     }
 
-    snooze(minutes) {
-        let nextAlarmTime = moment(this.nextAlarm.time, 'HH:mm').add(minutes, 'minutes');
+    snooze(snoozeTime) {
+        let nextAlarmTime = moment(this.nextAlarm.time, 'HH:mm').add(moment.duration(snoozeTime));
         this.nextAlarm = {
             ...this.nextAlarm,
             enabled: true,
