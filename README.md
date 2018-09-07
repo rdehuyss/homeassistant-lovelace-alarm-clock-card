@@ -48,6 +48,7 @@ The card exists out of two parts:
       when: '-00:30'
     - entity: light.bathroom
       when: on_dismiss
+      service: light.turn_on # not necessary as default is homeassistant.turn_on
   ...
 ```
 
@@ -114,6 +115,7 @@ resources:
               when: '-00:30'
             - entity: light.bathroom
               when: on_dismiss
+              service: light.turn_on
           holiday:
             calendars:
               - calendar.holidays
