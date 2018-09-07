@@ -42,10 +42,10 @@ export class AlarmController {
         let alarmClockConfiguration = this.alarmClockConfiguration;
         alarmClockConfiguration.snooze(this.config.snooze_time);
         this._saveConfiguration(alarmClockConfiguration);
-        if(this.config.scripts) {
-            this.config.scripts
-                .filter((script) => script.when == 'on_snooze')
-                .forEach((script) => this._hass.callService('script', 'turn_on', {"entity_id": script.entity}));
+        if(this.config.actions) {
+            this.config.actions
+                .filter((action) => script.when == 'on_snooze')
+                .forEach(action => this._runAction(action));
         }
         this._alarmRingingOff(); //must be at end
     }
@@ -54,10 +54,10 @@ export class AlarmController {
         let alarmClockConfiguration = this.alarmClockConfiguration;
         alarmClockConfiguration.dismiss();
         this._saveConfiguration(alarmClockConfiguration);
-        if(this.config.scripts) {
-            this.config.scripts
-                .filter((script) => script.when == 'on_dismiss')
-                .forEach((script) => this._hass.callService('script', 'turn_on', {"entity_id": script.entity}));
+        if(this.config.actions) {
+            this.config.actions
+                .filter((action) => action.when == 'on_dismiss')
+                .forEach(action => this._runAction(action));
             this._scripts = [];
         }
         this._alarmRingingOff(); //must be at end
@@ -176,15 +176,22 @@ export class AlarmController {
             if(moment(nextAlarm.time, "HH:mm").add(moment.duration(this.config.auto_disable)).format('HH:mm') == moment().format('HH:mm')) {
                 this.dismiss();
             }
-        } else if(!nextAlarm.snooze && !nextAlarm.nap && this.config.scripts) {
-            this.config.scripts
-                .filter(script => script.when !== 'on_snooze' && script.when !== 'on_dismiss' && !this._scripts[`${script.entity}-${script.when}`])
-                .filter(script => moment(nextAlarm.time, "HH:mm").add(moment.duration(script.when)).format('HH:mm') == moment().format('HH:mm'))
-                .forEach(script => {
-                    this._hass.callService('script', 'turn_on', {"entity_id": script.entity});
-                    this._scripts[`${script.entity}-${script.when}`] = true;
-                });
+        } else if(!nextAlarm.snooze && !nextAlarm.nap && this.config.actions) {
+            this.config.actions
+                .filter(action => action.when !== 'on_snooze' && action.when !== 'on_dismiss' && !this._scripts[`${action.entity}-${action.when}`])
+                .filter(action => moment(nextAlarm.time, "HH:mm").add(moment.duration(action.when)).format('HH:mm') == moment().format('HH:mm'))
+                .forEach(action => this._runAction(action));
         }
+    }
+
+    _runAction(action) {
+        let tempAction = {
+            service: 'homeassistant.turn_on',
+            ...action
+        }
+        let actualService = tempAction.service.split('.');
+        this._hass.callService(actualService[0], actualService[1], {"entity_id": tempAction.entity});
+        this._scripts[`${tempAction.entity}-${tempAction.when}`] = true;
     }
 
     _alarmRingingOn() {
