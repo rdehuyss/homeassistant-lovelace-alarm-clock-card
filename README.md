@@ -18,6 +18,7 @@ The idea is to have a really minimalistic, readable clock with some Home Assista
 
 
 ## Features
+### User interface
 The card exists out of two parts:
 * the clock part (65%) of the height of the screen with:
   * the clock of course
@@ -28,13 +29,35 @@ The card exists out of two parts:
   * can show up to 3 other home-assistant cards
   * shows the snooze and dismiss button when the alarm is ringing
   
+### Alarm - and PreAlarm options
+* You can define multiple entities that will turn on when the alarm goes off, including lights, input_booleans, scripts and media_players. Configuration is as follows:
+
+```
+  ...
+  alarm_entities:
+    - entity_id: input_boolean.alarm_clock
+    - entity_id: media_player.gpm_desktop_player
+  ...
+```
+* You can also specify pre-alarm options, think off having your Philips Hue light slowly starting an half hour before the alarm. Configuration is as follows:
+
+```
+  ...
+  scripts:
+    - entity: script.start_lights_bedroom_slowly
+      when: '-00:30'
+    - entity: light.bathroom
+      when: on_dismiss
+  ...
+```
+
+### Holiday integration
 But wait, that's not all! It also integrates with:
 * a holiday calendar so that when you have a holiday the next day, your alarm will automatically disable.
 * the workday sensor so that when you have a holiday the next day, your alarm will automatically disable.
 
-* When the alarm clock is ringing, the `input_boolean.alarm_clock_ringing` will be on, otherwise it will be off. Using it, one can do many automations like starting sonos, ... .
-
 ## Updates
+* 2018-09-07: more features...
 * 2018-09-05: first beta release
 
 ### Track Updates
@@ -57,12 +80,6 @@ You should have installed the custom_component [hass-variables](https://github.c
 
 #### In your configuration.yml
 ```
-input_boolean:
-  alarm_clock_ringing:
-    name: Alarm clock Ringing
-    initial: off
-    icon: mdi:alarm
-
 variable:
   alarm_clock:
     value: 'Alarm Clock'
@@ -89,9 +106,17 @@ resources:
     - type: vertical-stack
       cards:
         - type: "custom:alarm-clock-card"
+          alarm_entities:
+            - entity_id: input_boolean.alarm_clock
+            - entity_id: media_player.gpm_desktop_player
+          scripts:
+            - entity: script.start_lights_bedroom_slowly
+              when: '-00:30'
+            - entity: light.bathroom
+              when: on_dismiss
           holiday:
             calendars:
-              - calendar.holiday
+              - calendar.holidays
           cards:
             - type: 'custom:simple-weather-card'
               entity: weather.yweather
@@ -140,6 +165,7 @@ resources:
               when:
                 entity: group.all_important_devices
                 state: 'off'
+
 
 ```
 
