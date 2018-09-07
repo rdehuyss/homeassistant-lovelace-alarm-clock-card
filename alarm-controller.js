@@ -2,6 +2,10 @@ export class AlarmController {
 
     constructor(config) {
         this.config = config;
+        this._isAlarmRinging = false;
+        this._mappingMediaPlayer = {'turn_on': 'media_play', 'turn_off': 'media_pause'};
+        this._scripts = [];
+
     }
 
     set hass(hass) {
@@ -38,6 +42,11 @@ export class AlarmController {
         let alarmClockConfiguration = this.alarmClockConfiguration;
         alarmClockConfiguration.snooze(this.config.snooze_time);
         this._saveConfiguration(alarmClockConfiguration);
+        if(this.config.scripts) {
+            this.config.scripts
+                .filter((script) => script.when == 'on_snooze')
+                .forEach((script) => this._hass.callService('script', 'turn_on', {"entity_id": script.entity}));
+        }
         this._alarmRingingOff(); //must be at end
     }
 
@@ -45,6 +54,12 @@ export class AlarmController {
         let alarmClockConfiguration = this.alarmClockConfiguration;
         alarmClockConfiguration.dismiss();
         this._saveConfiguration(alarmClockConfiguration);
+        if(this.config.scripts) {
+            this.config.scripts
+                .filter((script) => script.when == 'on_dismiss')
+                .forEach((script) => this._hass.callService('script', 'turn_on', {"entity_id": script.entity}));
+            this._scripts = [];
+        }
         this._alarmRingingOff(); //must be at end
     }
 
@@ -142,7 +157,7 @@ export class AlarmController {
     }
 
     isAlarmRinging() {
-        return this.alarmRingingEntity.state == 'on';
+        return this._isAlarmRinging;
     }
 
     _evaluate() {
@@ -160,34 +175,38 @@ export class AlarmController {
         } else if(this.isAlarmRinging()) {
             if(moment(nextAlarm.time, "HH:mm").add(moment.duration(this.config.auto_disable)).format('HH:mm') == moment().format('HH:mm')) {
                 this.dismiss();
-                if(this.config.scripts) {
-                    var script = this.config.scripts.find((script) => script.when == 'on_dismissed');
-                    if(script) {
-                        this._hass.callService('script', 'turn_on', {"entity_id": script.entity});
-                    }
-                }
             }
         } else if(this.config.scripts) {
-            for(let script of this.config.scripts) {
-                if(script.when !== 'on_snooze' && script.when !== 'on_dismiss') {
-                    if(moment(nextAlarm.time, "HH:mm").add(moment.duration(script.when)).format('HH:mm') == moment().format('HH:mm')) {
-                        this._hass.callService('script', 'turn_on', {"entity_id": script.entity});
-                    }
-                }
-            }
+            this.config.scripts
+                .filter(script => script.when !== 'on_snooze' && script.when !== 'on_dismiss' && !this._scripts[`${script.entity}-${script.when}`])
+                .filter(script => moment(nextAlarm.time, "HH:mm").add(moment.duration(script.when)).format('HH:mm') == moment().format('HH:mm'))
+                .forEach(script => {
+                    this._hass.callService('script', 'turn_on', {"entity_id": script.entity});
+                    this._scripts[`${script.entity}-${script.when}`] = true;
+                });
         }
     }
 
     _alarmRingingOn() {
+        this._isAlarmRinging = true;
         this._callAlarmRingingService('turn_on');
     }
 
     _alarmRingingOff() {
+        this._isAlarmRinging = false;
         this._callAlarmRingingService('turn_off');
     }
 
     _callAlarmRingingService(action) {
-        this._hass.callService('input_boolean', action, {"entity_id": this.alarmRingingEntity.entity_id});
+        if(this.config.alarm_entities) {
+            for(let alarm_entity of this.config.alarm_entities) {
+                if(alarm_entity.entity_id.startsWith('media_player')) {
+                    this._hass.callService('media_player', this._mappingMediaPlayer[action], {"entity_id": alarm_entity.entity_id});
+                } else {
+                    this._hass.callService('homeassistant', action, {"entity_id": alarm_entity.entity_id});
+                }
+            }
+        }
     }
 
     _saveConfiguration(configuration) {
