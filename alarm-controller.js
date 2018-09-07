@@ -176,7 +176,7 @@ export class AlarmController {
             if(moment(nextAlarm.time, "HH:mm").add(moment.duration(this.config.auto_disable)).format('HH:mm') == moment().format('HH:mm')) {
                 this.dismiss();
             }
-        } else if(this.config.scripts) {
+        } else if(!nextAlarm.snooze && !nextAlarm.nap && this.config.scripts) {
             this.config.scripts
                 .filter(script => script.when !== 'on_snooze' && script.when !== 'on_dismiss' && !this._scripts[`${script.entity}-${script.when}`])
                 .filter(script => moment(nextAlarm.time, "HH:mm").add(moment.duration(script.when)).format('HH:mm') == moment().format('HH:mm'))
